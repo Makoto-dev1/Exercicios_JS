@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmes</title>
+</head>
+
+<body>
+
+    <form id="form">
+        <input type="text" id="nome" placeholder="Nome do filme" required>
+        <input type="text" id="categoria" placeholder="Categoria" required>
+        <input type="text" id="ano" placeholder="Ano de lançamento" required>
+
+        <button type="button" onclick="cadastrar()" id="btnCadastrar">Cadastrar</button>
+        <button type="button" onclick="remover()" id="btnRemover">Remover</button>
+
+        <table>
+            <caption>Filmes</caption>
+            <thead>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Nome
+                </th>
+                <th>
+                    Categoria
+                </th>
+                <th>
+                    Ano Lançamento
+                </th>
+            </thead>
+            <tbody id="tabela-lista-corpo"></tbody>
+        </table>
+    </form>
+
+</body>
+<script>
+    let url = 'https://5f875f3349ccbb0016177464.mockapi.io/api/Categorias';
+    let filme = document.querySelector('#filme');
+
+    let filmes = [];
+
+    function listar() {
+
+        let xhrGet = new XMLHttpRequest()
+
+        xhrGet.onload = listarSucesso;
+
+        xhrGet.onerror = listarErro;
+
+        xhrGet.open('GET', url);
+
+        xhrGet.send();
+    }
+
+    function listarSucesso() {
+        console.log('Sucesso!');
+
+        const data = this.responseText;
+
+        filmes = JSON.parse(data)
+
+        console.log(filmes);
+    }
+
+    function listarErro(err) {
+        console.error(err);
+    }
+
+    function cadastrar() {
+        event.preventDefault();
+
+        let xhrPost = new XMLHttpRequest();
+        xhrPost.onload = cadastroSucesso;
+        xhrPost.onerror = cadastroErro;
+
+        xhrPost.open('POST', url);
+
+        xhrPost.setRequestHeader('content-type', 'application/json');
+
+        let params = {
+            name: filmes.value
+        }
+
+        xhrPost.send(JSON.stringify(params))
+    }
+
+    function cadastroSucesso() {
+        console.log('Sucesso no cadastro');
+        console.log(this.status);
+        console.log(JSON.parse(this.responseText));
+
+        listar();
+    }
+
+    function cadastroErro(err) {
+        console.log('Erro no cadastro' + err);
+    }
+
+    function alterar() {
+        let xhrPut = new XMLHttpRequest();
+        xhrPut.onload = alterarSucesso;
+        xhrPut.onerror =  alterarErro;
+        xhrPut.open('PUT', url + '/' + filmes.value);
+        xhrPut.send();
+    }
+
+    function alterarSucesso(){
+        console.log('Sucesso na alteração');
+        console.log(this.status);
+        console.log(JSON.parse(this.responseText));
+
+        listar();
+    }
+
+    function alterarErro() {
+        console.log('Erro na alteração' + err);
+    }
+
+    function remover() {
+        let xhrDelete = new XMLHttpRequest();
+        xhrDelete.onload = removeSucesso;
+        xhrDelete.onerror = removeErro;
+        xhrDelete.open('DELETE', url + '/' + filmes.value);
+        xhrDelete.send();
+    }
+
+    function removeSucesso() {
+        console.log('Sucesso na remoção');
+        console.log(this.status);
+        console.log(JSON.parse(this.responseText));
+
+        listar();
+    }
+
+    function removeErro() {
+        console.log('Erro na remoção' + err);
+    }
+
+</script>
+
+</html>
